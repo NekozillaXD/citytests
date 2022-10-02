@@ -114,7 +114,7 @@ COMMIT;
 USE shop;
 
 /* Решение */
-SELECT users.name FROM users, orders
+SELECT users.* FROM users, orders
 WHERE 
     orders.user_id = users.id AND
     YEAR(NOW()) - YEAR(users.birthday_at) > 30 AND
