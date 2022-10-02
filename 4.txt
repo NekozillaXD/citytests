@@ -103,10 +103,11 @@ COMMIT;
 USE shop;
 
 /* Решение */
-SELECT users.* FROM users, orders
+SELECT users.name FROM users, orders
 WHERE 
-    EXISTS (SELECT * FROM orders WHERE orders.user_id = users.id AND orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH)) AND
-    users.birthday_at >= DATE_ADD(NOW(), INTERVAL -30 YEAR)
-GROUP BY users.name
+    orders.user_id = users.id AND
+    YEAR(NOW()) - YEAR(users.birthday_at) > 30 AND
+    TO_DAYS(NOW()) - TO_DAYS(orders.created_at) < 182
+GROUP BY users.id
 HAVING COUNT(orders.id) >= 3
-LIMIT 1
+ORDER BY RAND() LIMIT 1
