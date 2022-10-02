@@ -108,17 +108,17 @@
             function sortTable(n) {
                 var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
                 if (n == 0) {
-                    $("#tr0").css("display", "block")
+                    $("#tr0").css("display", "inline")
                     $("#tr1").css("display", "none")
                     $("#tr2").css("display", "none")
                 } else if (n == 1) {
                     $("#tr0").css("display", "none")
-                    $("#tr1").css("display", "block")
+                    $("#tr1").css("display", "inline")
                     $("#tr2").css("display", "none")
                 } else {
                     $("#tr0").css("display", "none")
                     $("#tr1").css("display", "none")
-                    $("#tr2").css("display", "block")
+                    $("#tr2").css("display", "inline")
                 }
                 table = document.getElementById("membersTbl");
                 switching = true;
