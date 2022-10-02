@@ -117,10 +117,10 @@ USE shop;
 SELECT users.*
 FROM users
 WHERE users.id IN
-	(SELECT orders.user_id
+	(SELECT or4ders.user_id
     FROM orders
-    WHERE orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH) AND orders.user_id = users.id
-    GROUP BY users.name
+    WHERE orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH)
+    GROUP BY orders.user_id
     HAVING COUNT(orders.id) >= 3)
     AND users.birthday_at <= DATE_ADD(NOW(), INTERVAL -30 YEAR)
 LIMIT 1
