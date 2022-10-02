@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name = "viewport" content="width=device-width, initial-scale=1">
+
+        <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+        
+
+        <link rel="stylesheet" href="style.css">
+
+        <title>Олимпиада</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row centered">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h1>Олимпиада</h1>
+                    
+                    <label class="col-md-2">Участники</label>
+                    <input id="inp" type="text" class="col-md-8" placeholder="Введите имена участников через запятую">
+                    <button id='btn' onclick="ValidateInput();" class="col-md-2 btn-success">Добавить</button>
+                </div>
+
+                <div class="col-lg-8 col-lg-offset-2">
+                    <table class="table table-bordered" id="membersTbl" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 10%;" onclick="sortTable(0)">id</th>
+                                <th class="text-center" style="width: 100%;" onclick="sortTable(1)">Имя</th>
+                                <th class="text-center" style="width: 100%;" onclick="sortTable(2)">Очки</th>
+                            </tr>
+                        </thead>
+                        <tbody class="members"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="errModal" tabindex="-1" aria-hidden="true" aria-labelledby="modalLabel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Ошибка</h5>
+                    </div>
+                    <div class="modal-body">
+                        Можно использовать только символы кириллицы и запятую.
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-close" data-dismiss="modal" aria-label="close">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            function ValidateInput()
+            {
+                input = document.getElementById("inp");
+                re = /[^А-Яа-яЁё, ]/;
+                if (re.test(input.value) || input.value == '') {
+                    $('#errModal').modal('show')
+                    console.log('err');
+                    input.value = '';
+                } else {
+                    $('#errModal').modal('hide')
+                    AddMember(input.value);
+                }
+            }
+
+            function AddMember(membersInput)
+            {
+                var members = membersInput.split(',');
+                $("#membersTbl").css("display","block");
+                members.forEach(async (member) => {
+                    member = member.trim();
+                    if (member != '' && member != ' ') {
+                        var rows = $("#membersTbl").find('tr').length;
+                        $("#membersTbl").append("<tr><td>" + rows + "</td>" + "<td>" + member + "</td>" + "<td>" + Math.floor(Math.random() * 100) + "</td></tr>")
+                    }
+                })
+                
+            }
+
+            document.querySelector("#inp").addEventListener("keyup", event => {
+                if(event.key !== "Enter") return;
+                document.querySelector("#btn").click();
+                event.preventDefault();
+            });
+
+            $("th").on('click', function(){
+                var column = $(this).data('column')
+                var order = $(this).data('order')
+                console.log('col clicked!', column, order)
+
+                if (order == 'desc') {
+                    $(this).data('order', 'asc')
+
+                } else {
+                    $(this).data('order', 'desc')
+                }
+            })
+
+            function sortTable(n) {
+                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                table = document.getElementById("membersTbl");
+                switching = true;
+                dir = "asc";
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("td")[n];
+                        y = rows[i + 1].getElementsByTagName("td")[n];
+                        if (dir == "asc") {
+                            if (n == 1) {
+                                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                    shouldSwitch = true;
+                                    break;
+                                } else if (dir == "desc") {
+                                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+                                    shouldSwitch = true;
+                                    break;
+                                } else if (dir == "desc") {
+                                    if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
+                                        shouldSwitch = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }  
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                        switchcount ++;
+                    } else {
+                        if (switchcount == 0 && dir == "asc") {
+                            dir = "desc";
+                            switching = true;
+                        }
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
