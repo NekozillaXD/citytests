@@ -38,7 +38,7 @@ INSERT INTO users VALUES
   (DEFAULT, 'third client', '1990-01-01', NOW(), NOW())
 
 /* Решение */
-SELECT DISTINCT users.name FROM users, orders WHERE orders.user_id = users.id;
+SELECT users.* FROM users, orders WHERE EXISTS (SELECT * FROM orders WHERE orders.user_id = users.id) GROUP BY users.name;
 
 2) /* Выведите список товаров products и разделов catalogs, который соответствует товару. */
  USE shop;
@@ -73,7 +73,7 @@ INSERT INTO catalogs VALUES
   (DEFAULT, 'Video cards');
 
 /* Решение */
-SELECT products.name, catalogs.name FROM products, catalogs WHERE products.catalog_id = catalogs.id;
+SELECT catalogs.name AS category, products.name AS product_name FROM products, catalogs WHERE products.catalog_id = catalogs.id ORDER BY catalogs.name ASC;
 
 3) /*  В базе данных shop и sample присутствуют одни и те же таблицы.
   * Переместите запись id = 1 из таблицы shop.users в таблицу sample.users. Используйте транзакции. */
@@ -96,23 +96,17 @@ INSERT INTO users VALUES
 /* Решение */
 SET AUTOCOMMIT = 0;
 BEGIN;
-SELECT @maxId := MAX(id) FROM sample.users;
-INSERT into sample.users VALUES (@maxId + 1, 
-                                 (SELECT name FROM shop.users WHERE shop.users.id = 1),
-                                 (SELECT birthday_at FROM shop.users WHERE shop.users.id = 1),
-                                 (SELECT created_at FROM shop.users WHERE shop.users.id = 1),
-                                 (SELECT updated_at FROM shop.users WHERE shop.users.id = 1)
-                                 );
+INSERT INTO sample.users (name, birthday_at, created_at, updated_at) SELECT name, birthday_at, created_at, updated_at FROM shop.users WHERE shop.users.id = 1;
 COMMIT;
 
 4)  /* Выведите одного случайного пользователя из таблицы shop.users, старше 30 лет, сделавшего минимум 3 заказа за последние полгода */
 USE shop;
 
 /* Решение */
-SELECT DISTINCT users.name FROM users, orders
+SELECT users.* FROM users, orders
 WHERE 
-    orders.user_id = users.id AND
-    YEAR(NOW()) - YEAR(users.birthday_at) > 30 AND
-    TO_DAYS(NOW()) - TO_DAYS(orders.created_at) > 182
+    EXISTS (SELECT * FROM orders WHERE orders.user_id = users.id AND orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH)) AND
+    users.birthday_at >= DATE_ADD(NOW(), INTERVAL -30 YEAR)
+GROUP BY users.name
 HAVING COUNT(orders.id) >= 3
-ORDER BY RAND() LIMIT 1
+LIMIT 1
