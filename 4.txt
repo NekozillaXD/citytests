@@ -117,8 +117,8 @@ USE shop;
 SELECT users.*
 FROM users
 WHERE users.id IN
-	(SELECT users.id
-    FROM users, orders
+	(SELECT orders.user_id
+    FROM orders
     WHERE orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH) AND orders.user_id = users.id
     GROUP BY users.name
     HAVING COUNT(orders.id) >= 3)
