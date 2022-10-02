@@ -114,11 +114,13 @@ COMMIT;
 USE shop;
 
 /* Решение */
-SELECT users.* FROM users, orders
-WHERE 
-    orders.user_id = users.id AND
-    YEAR(NOW()) - YEAR(users.birthday_at) > 30 AND
-    TO_DAYS(NOW()) - TO_DAYS(orders.created_at) < 182
-GROUP BY users.id
-HAVING COUNT(orders.id) >= 3
-ORDER BY RAND() LIMIT 1
+SELECT users.*
+FROM users
+WHERE users.id IN
+	(SELECT users.id
+    FROM users, orders
+    WHERE orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH) AND orders.user_id = users.id
+    GROUP BY users.name
+    HAVING COUNT(orders.id) >= 3)
+    AND users.birthday_at <= DATE_ADD(NOW(), INTERVAL -30 YEAR)
+LIMIT 1
