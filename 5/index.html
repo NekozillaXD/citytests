@@ -92,7 +92,7 @@
                     member = member.trim();
                     if (member != '' && member != ' ') {
                         var rows = $("#membersTbl").find('tr').length;
-                        $("#membersTbl").append("<tr><td>" + rows + "</td>" + "<td>" + member + "</td>" + "<td>" + Math.floor(Math.random() * 100) + "</td></tr>")
+                        $("#membersTbl").append("<tr><td style=\"word-wrap: break-word; max-width: 100px;\">" + rows + "</td>" + "<td style=\"word-wrap: break-word; max-width: 100px;\">" + member + "</td>" + "<td style=\"word-wrap: break-word; max-width: 100px;\">" + Math.floor(Math.random() * 100) + "</td></tr>")
                     }
                 })
             }
