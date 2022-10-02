@@ -117,7 +117,7 @@ USE shop;
 SELECT users.*
 FROM users
 WHERE users.id IN
-	(SELECT or4ders.user_id
+	(SELECT orders.user_id
     FROM orders
     WHERE orders.created_at > DATE_ADD(NOW(), INTERVAL -6 MONTH)
     GROUP BY orders.user_id
